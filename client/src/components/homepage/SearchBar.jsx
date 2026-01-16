@@ -7,12 +7,20 @@ export function SearchBar() {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { setSearchText } = useSearch();
+  const { searchText, setSearchText } = useSearch();
   {
     /*SearchContext จะจัดการ state ของ searchText*/
   }
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
+
+  // Sync searchValue กับ searchText จาก context (เมื่อมีการเปลี่ยนแปลงจากภายนอก เช่น คลิก tag)
+  useEffect(() => {
+    if (searchText !== searchValue) {
+      setSearchValue(searchText);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
   // ดึง suggestions จาก API
   useEffect(() => {

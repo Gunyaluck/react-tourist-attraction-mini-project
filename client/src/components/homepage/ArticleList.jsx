@@ -3,9 +3,21 @@ import axios from "axios";
 import { useSearch } from "../../contexts/SearchContext";
 
 export function ArticleList() {
-  const { searchText } = useSearch();
+  const { searchText, addTagToSearch } = useSearch();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+
+  const copyToClipboard = (text) => {
+    console.log("text", text);
+    var textField = document.createElement("textarea");
+    textField.innerText = text;
+    document.body.appendChild(textField);
+    textField.select();
+    document.execCommand("copy");
+    textField.remove();
+  };
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -27,6 +39,7 @@ export function ArticleList() {
     };
 
     fetchArticles();
+    setShowAll(false); // Reset showAll เมื่อ searchText เปลี่ยน
   }, [searchText]);
 
   const truncateDescription = (text, maxLength = 100) => {
@@ -51,10 +64,16 @@ export function ArticleList() {
     );
   }
 
+  const displayedArticles = showAll ? articles : articles.slice(0, 4);
+  const hasMore = articles.length > 4;
+
   return (
     <div className="w-full px-4 py-4 space-y-4 lg:max-w-7xl lg:mx-auto lg:px-4 lg:py-8 lg:space-y-6">
-      {articles.map((article, index) => (
-        <div key={article.eid || index} className="relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden mb-4 lg:flex-row lg:gap-6 lg:shadow-none lg:mb-20 lg:rounded-none">
+      {displayedArticles.map((article, index) => (
+        <div
+          key={article.eid || index}
+          className="relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden mb-4 lg:flex-row lg:gap-6 lg:shadow-none lg:mb-20 lg:rounded-none"
+        >
           {/* รูปภาพใหญ่ */}
           <div className="w-full h-48 shrink-0 lg:w-96 lg:h-80">
             <img
@@ -81,10 +100,15 @@ export function ArticleList() {
               </a>
               <div className="flex flex-wrap gap-1.5">
                 {article.tags?.map((tag, tagIndex) => (
-                  <span key={tagIndex} className="text-xs text-gray-500">
+                  <button
+                    key={tagIndex}
+                    type="button"
+                    onClick={() => addTagToSearch(tag)}
+                    className="text-xs text-gray-500 hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+                  >
                     {tag}
                     {tagIndex < article.tags.length - 1 && ","}
-                  </span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -106,34 +130,72 @@ export function ArticleList() {
             </div>
           </div>
 
-          {/* ไอคอน link สีฟ้า (ถ้ามี url) */}
+          {/* ปุ่ม copy link สีฟ้า (ถ้ามี url) */}
           {article.url && (
-            <div className="absolute top-4 right-4 lg:relative lg:top-0 lg:right-0 lg:shrink-0 lg:flex lg:items-start lg:pt-1">
-              <a
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600"
+            <div className="absolute top-80 right-4 lg:relative lg:top-0 lg:right-0 lg:shrink-0 lg:flex lg:items-start lg:pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  copyToClipboard(article.url);
+                  setCopiedIndex(index);
+                  setTimeout(() => setCopiedIndex(null), 2000);
+                }}
+                className="hover:bg-blue-100 text-blue-600 px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 lg:px-4 lg:py-2 lg:text-sm"
+                title="Copy link"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 lg:h-6 lg:w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                  />
-                </svg>
-              </a>
+                {copiedIndex === index ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 lg:h-5 lg:w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 lg:h-5 lg:w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>
       ))}
+
+      {/* ปุ่ม View More / Show Less */}
+      {hasMore && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll(!showAll)}
+            className="hover:cursor-pointer text-blue-600 px-6 py-2 rounded-lg text-sm font-medium transition-colors underline"
+          >
+            {showAll ? "แสดงน้อยลง" : "แสดงเพิ่มเติม"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
