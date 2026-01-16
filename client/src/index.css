@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #000000;
+    --color-secondary: #000000;
+    --color-tertiary: #000000;
+    --color-quaternary: #000000;
+    --color-quinary: #000000;
+    --color-senary: #000000;
+    --color-septenary: #000000;
+    --color-octonary: #000000;
+    --color-nonary: #000000;
+    --color-denary: #000000;
+    
+    --font-family-sans: "Prompt", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+    font-family: var(--font-family-sans);
+}
+
