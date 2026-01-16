@@ -16,9 +16,10 @@ app.get("/", (req, res) => {
 app.get("/trips", (req, res) => {
   let keywords = req.query.keywords;
 
-  if (keywords === undefined) {
-    return res.status(400).json({
-      message: "Please send keywords parameter in the URL endpoint",
+  // ถ้าไม่มี keywords หรือ keywords ว่าง ให้ส่งข้อมูลทั้งหมดกลับ
+  if (keywords === undefined || keywords.trim() === "") {
+    return res.json({
+      data: trips,
     });
   }
 
