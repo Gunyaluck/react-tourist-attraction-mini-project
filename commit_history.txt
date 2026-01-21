@@ -1,0 +1,7 @@
+1255554 - MOGunyaluck - Merge pull request #2 from Gunyaluck/dev
+33d06e9 - MOGunyaluck - Merge pull request #1 from Gunyaluck/feature/homepage
+2afc54c - MOGunyaluck - feat(hompage): update README and enhance ArticleList and SearchBar components for improved user experience
+1f93209 - MOGunyaluck - feat(homepage): complete tourist attraction search platform with autocomplete
+589f4cb - Napat - refactor: create info dir
+9fb754d - knotnapat - add validation on server
+323545f - Mind Sathirasrindh - feat:init ex
