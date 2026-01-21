@@ -94,6 +94,8 @@ export function ArticleList() {
               </p>
               <a
                 href={article.url || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-500 hover:text-blue-600 text-xs font-medium inline-block mb-2 underline lg:text-sm"
               >
                 อ่านต่อ
